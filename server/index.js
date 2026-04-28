@@ -1,13 +1,18 @@
 import express from "express";
+import dotenv from "dotenv"
+import connectDB from "./config/connectDB.js";
+
+dotenv.config();
 
 const app = express();
 
-const PORT = 8000
+const PORT = process.env.PORT || 8000
 
 app.get("/", (req, res) => {
-    res.send("Hello World!");
+    return res.json({ message: "Satyam.AI API is running" });
 });
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    connectDB();
 });
