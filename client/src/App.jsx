@@ -21,7 +21,7 @@ function App() {
     }
     getUser()
 
-  }, [dispatch])
+  }, [])
 
   return (
     <Routes>
