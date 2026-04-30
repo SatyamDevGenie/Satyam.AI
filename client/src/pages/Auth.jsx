@@ -11,7 +11,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
 
-function Auth() {
+function Auth({ isModel = false }) {
 
     const dispatch = useDispatch()
 
