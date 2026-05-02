@@ -1,17 +1,14 @@
 import fs from "fs"
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import { askAi } from "../services/openRouter.service.js";
-import User from "../models/user.model.js"
-import Interview from "../models/interview.model.js"
-
+import User from "../models/user.model.js";
+import Interview from "../models/interview.model.js";
 
 export const analyzeResume = async (req, res) => {
     try {
-
         if (!req.file) {
             return res.status(400).json({ message: "Resume required" });
         }
-
         const filepath = req.file.path
 
         const fileBuffer = await fs.promises.readFile(filepath)
@@ -46,8 +43,8 @@ Return strictly JSON:
 {
   "role": "string",
   "experience": "string",
-  "projects": ["project1", "project2", "project3", "project4],
-  "skills": ["skill1", "skill2", "skill3", "skill4", "skill5", "skill6", "skill7", "skill8", "skill9", "skill10"]
+  "projects": ["project1", "project2"],
+  "skills": ["skill1", "skill2"]
 }
 `
             },
@@ -56,6 +53,7 @@ Return strictly JSON:
                 content: resumeText
             }
         ];
+
 
         const aiResponse = await askAi(messages)
 
@@ -72,7 +70,6 @@ Return strictly JSON:
             resumeText
         });
 
-
     } catch (error) {
         console.error(error);
 
@@ -83,7 +80,6 @@ Return strictly JSON:
         return res.status(500).json({ message: error.message });
     }
 };
-
 
 
 export const generateQuestion = async (req, res) => {
@@ -227,7 +223,6 @@ Make questions based on the candidate’s role, experience,interviewMode, projec
 }
 
 
-
 export const submitAnswer = async (req, res) => {
     try {
         const { interviewId, questionIndex, answer, timeTaken } = req.body
@@ -337,7 +332,6 @@ Answer: ${answer}
 
     }
 }
-
 
 
 export const finishInterview = async (req, res) => {

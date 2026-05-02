@@ -12,8 +12,6 @@ import axios from "axios"
 import { ServerUrl } from '../App';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
-
-
 function Step1SetUp({ onStart }) {
     const { userData } = useSelector((state) => state.user)
     const dispatch = useDispatch()
@@ -72,8 +70,6 @@ function Step1SetUp({ onStart }) {
             setLoading(false)
         }
     }
-
-
     return (
         <motion.div
             initial={{ opacity: 0 }}
