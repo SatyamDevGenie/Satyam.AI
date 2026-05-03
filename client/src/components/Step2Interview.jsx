@@ -226,6 +226,8 @@ function Step2Interview({ interviewData, onFinish }) {
       recognitionRef.current.stop();
     }
   };
+
+
   const toggleMic = () => {
     if (isMicOn) {
       stopMic();
@@ -234,6 +236,8 @@ function Step2Interview({ interviewData, onFinish }) {
     }
     setIsMicOn(!isMicOn);
   };
+
+
 
 
 
