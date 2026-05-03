@@ -6,6 +6,8 @@ import femaleVideo from "../assets/videos/female-ai.mp4"
 import Timer from './Timer'
 import { motion } from "motion/react"
 import { FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
+import { ServerUrl } from "../App"
+import axios from 'axios'
 
 
 function Step2Interview({ interviewData, onFinish }) {
@@ -118,6 +120,7 @@ function Step2Interview({ interviewData, onFinish }) {
         if (isMicOn) {
           startMic();
         }
+
         setTimeout(() => {
           setSubtitle("");
           resolve();
@@ -162,6 +165,7 @@ function Step2Interview({ interviewData, onFinish }) {
         if (isMicOn) {
           startMic();
         }
+
       }
 
     }
@@ -237,6 +241,29 @@ function Step2Interview({ interviewData, onFinish }) {
     setIsMicOn(!isMicOn);
   };
 
+
+  const submitAnswer = async () => {
+    if (isSubmitting) return;
+    stopMic()
+    setIsSubmitting(true)
+
+    try {
+      const result = await axios.post(ServerUrl + "/api/interview/submit-answer", {
+        interviewId,
+        questionIndex: currentIndex,
+        answer,
+        timeTaken:
+          currentQuestion.timeLimit - timeLeft,
+      }, { withCredentials: true })
+
+      setFeedback(result.data.feedback)
+      speakText(result.data.feedback)
+      setIsSubmitting(false)
+    } catch (error) {
+      console.log(error)
+      setIsSubmitting(false)
+    }
+  }
 
 
 
@@ -326,6 +353,7 @@ function Step2Interview({ interviewData, onFinish }) {
 
           <div className='flex items-center gap-4 mt-6'>
             <motion.button
+              onClick={toggleMic}
               whileTap={{ scale: 0.9 }}
               className='w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full bg-black text-white shadow-lg'>
               <FaMicrophone size={20} />
