@@ -1,11 +1,14 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import axios from "axios"
+import { ServerUrl } from '../App';
 import Step3Report from '../components/Step3Report';
+
 
 function InterviewReport() {
 
-    const { id } = useParams()   // to get ID
 
+    const { id } = useParams()
     const [report, setReport] = useState(null);
 
     useEffect(() => {
@@ -23,6 +26,7 @@ function InterviewReport() {
         fetchReport()
     }, [])
 
+
     if (!report) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -33,9 +37,7 @@ function InterviewReport() {
         );
     }
 
-
     return <Step3Report report={report} />
-
 }
 
 export default InterviewReport
