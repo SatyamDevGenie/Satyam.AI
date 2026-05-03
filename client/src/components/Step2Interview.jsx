@@ -192,6 +192,28 @@ function Step2Interview({ interviewData, onFinish }) {
   }, [isIntroPhase, currentIndex])
 
 
+
+  useEffect(() => {
+    if (!("webkitSpeechRecognition" in window)) return;
+
+    const recognition = new window.webkitSpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const transcript =
+        event.results[event.results.length - 1][0].transcript;
+
+      setAnswer((prev) => prev + " " + transcript);
+    };
+
+    recognitionRef.current = recognition;
+
+  }, []);
+
+
+
   return (
     <div className='min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-100 flex items-center justify-center p-4 sm:p-6'>
       <div className='w-full max-w-350 min-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col lg:flex-row overflow-hidden'>
@@ -231,7 +253,7 @@ function Step2Interview({ interviewData, onFinish }) {
             <div className="h-px bg-gray-200"></div>
 
             <div className='flex justify-center'>
-              <Timer timeLeft="30" totalTime="60" />
+              <Timer timeLeft={timeLeft} totalTime={currentQuestion?.timeLimit} />
             </div>
 
             {/* divider */}
@@ -271,6 +293,8 @@ function Step2Interview({ interviewData, onFinish }) {
 
           <textarea
             placeholder="Type your answer here..."
+            onChange={(e) => setAnswer(e.target.value)}
+            value={answer}
             className="flex-1 bg-gray-100 p-4 sm:p-6 rounded-2xl resize-none outline-none border border-gray-200 focus:ring-2 focus:ring-emerald-500 transition text-gray-800" />
 
           <div className='flex items-center gap-4 mt-6'>
