@@ -76,6 +76,62 @@ function Step2Interview({ interviewData, onFinish }) {
 
   }, [])
 
+  const videoSource = voiceGender === "male" ? maleVideo : femaleVideo;
+
+  /* ---------------- SPEAK FUNCTION ---------------- */
+  const speakText = (text) => {
+    return new Promise((resolve) => {
+      if (!window.speechSynthesis || !selectedVoice) {
+        resolve();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      // Add natural pauses after commas and periods
+      const humanText = text
+        .replace(/,/g, ", ... ")
+        .replace(/\./g, ". ... ");
+
+      const utterance = new SpeechSynthesisUtterance(humanText);
+
+      utterance.voice = selectedVoice;
+
+      // Human-like pacing
+      utterance.rate = 0.92;     // slightly slower than normal
+      utterance.pitch = 1.05;    // small warmth
+      utterance.volume = 1;
+
+      utterance.onstart = () => {
+        setIsAIPlaying(true);
+        stopMic()
+        videoRef.current?.play();
+      };
+
+
+      utterance.onend = () => {
+        videoRef.current?.pause();
+        videoRef.current.currentTime = 0;
+        setIsAIPlaying(false);
+
+
+        if (isMicOn) {
+          startMic();
+        }
+        setTimeout(() => {
+          setSubtitle("");
+          resolve();
+        }, 300);
+      };
+
+
+      setSubtitle(text);
+
+      window.speechSynthesis.speak(utterance);
+    });
+  };
+
+
   return (
     <div className='min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-100 flex items-center justify-center p-4 sm:p-6'>
       <div className='w-full max-w-350 min-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col lg:flex-row overflow-hidden'>
@@ -83,7 +139,9 @@ function Step2Interview({ interviewData, onFinish }) {
         {/* video section */}
         <div className='w-full lg:w-[35%] bg-white flex flex-col items-center p-6 space-y-6 border-r border-gray-200'>
           <div className='w-full max-w-md rounded-2xl overflow-hidden shadow-xl'>
-            <video src={femaleVideo}
+            <video src={videoSource}
+              key={videoSource}
+              ref={videoRef}
               muted
               playsInline
               preload="auto"
@@ -99,9 +157,9 @@ function Step2Interview({ interviewData, onFinish }) {
               <span className='text-sm text-gray-500'>
                 Interview Status
               </span>
-              <span className='text-sm font-semibold text-emerald-600'>
-                AI Speaking
-              </span>
+              {isAIPlaying && <span className='text-sm font-semibold text-emerald-600'>
+                {isAIPlaying ? "AI is Speaking" : ""}
+              </span>}
             </div>
 
             {/* divider */}
