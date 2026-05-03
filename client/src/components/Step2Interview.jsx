@@ -132,6 +132,66 @@ function Step2Interview({ interviewData, onFinish }) {
   };
 
 
+
+  useEffect(() => {
+    if (!selectedVoice) {
+      return;
+    }
+    const runIntro = async () => {
+      if (isIntroPhase) {
+        await speakText(
+          `Hi ${userName}, it's great to meet you today. I hope you're feeling confident and ready.`
+        );
+
+        await speakText(
+          "I'll ask you a few questions. Just answer naturally, and take your time. Let's begin."
+        );
+
+        setIsIntroPhase(false)
+
+      } else if (currentQuestion) {
+        await new Promise(r => setTimeout(r, 800));
+
+        // If last question (hard level)
+        if (currentIndex === questions.length - 1) {
+          await speakText("Alright, this one might be a bit more challenging.");
+        }
+
+        await speakText(currentQuestion.question);
+
+        if (isMicOn) {
+          startMic();
+        }
+      }
+
+    }
+
+    runIntro()
+
+
+  }, [selectedVoice, isIntroPhase, currentIndex])
+
+
+  useEffect(() => {
+    if (isIntroPhase) return;
+    if (!currentQuestion) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          return 0;
+        }
+        return prev - 1
+
+      })
+    }, 1000);
+
+    return () => clearInterval(timer)
+
+  }, [isIntroPhase, currentIndex])
+
+
   return (
     <div className='min-h-screen bg-linear-to-br from-emerald-50 via-white to-teal-100 flex items-center justify-center p-4 sm:p-6'>
       <div className='w-full max-w-350 min-h-[80vh] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col lg:flex-row overflow-hidden'>
@@ -198,7 +258,7 @@ function Step2Interview({ interviewData, onFinish }) {
             AI Smart Interview
           </h2>
 
-          <div className='relative mb-6 bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-sm'>
+          {!isIntroPhase && (<div className='relative mb-6 bg-gray-50 p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-sm'>
             <p className='text-xs sm:text-sm text-gray-400 mb-2'>
               Question {currentIndex + 1} of {questions.length}
             </p>
@@ -207,7 +267,7 @@ function Step2Interview({ interviewData, onFinish }) {
               {currentQuestion?.question}
             </div>
 
-          </div>
+          </div>)}
 
           <textarea
             placeholder="Type your answer here..."
